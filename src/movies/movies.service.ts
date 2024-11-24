@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class MoviesService {
@@ -6,39 +6,37 @@ export class MoviesService {
     { id: 1, name: 'Kimi no na Wa' },
     { id: 2, name: 'Avengers' }
   ];
+  // Armazena a lista de filmes em memória
 
+  // Método para criar um novo filme
+  create(movie) {
+    this.movies.push(movie);
+    return movie;
+  }
+
+  // Método para listar todos os filmes
   findAll() {
     return this.movies;
   }
 
+  // Método para encontrar um item específico pelo ID
   findOne(id: number) {
-    return this.movies.find(movie => movie.id === id);
+    const movie = this.movies.find(movie => movie.id === id);
+    if (!movie) throw new NotFoundException(`Filme com ID ${id} não encontrado`);
+    return movie;
   }
 
-  create(movie: { name: string }) {
-    const newMovie = {
-      id: this.movies.length + 1,
-      ...movie,
-    };
-    this.movies.push(newMovie);
-    return newMovie;
+  // Método para atualizar um item específico pelo ID
+  update(id: number, updateData) {
+    const movie = this.findOne(id);
+    Object.assign(movie, updateData);
+    return movie;
   }
 
-  update(id: number, movieUpdates: { name: string }) {
-    const movieIndex = this.movies.findIndex(movie => movie.id === id);
-    if (movieIndex === -1) {
-      return `Filme com ID ${id} não encontrado`;
-    }
-    this.movies[movieIndex] = { ...this.movies[movieIndex], ...movieUpdates };
-    return this.movies[movieIndex];
-  }
-
+  // Método para remover um item específico pelo ID
   remove(id: number) {
-    const movieIndex = this.movies.findIndex(movie => movie.id === id);
-    if (movieIndex === -1) {
-      return `Filme com ID ${id} não encontrado`;
-    }
-    this.movies.splice(movieIndex, 1);
-    return `Filme com ID ${id} removido com sucesso`;
+    const index = this.movies.findIndex(movie => movie.id === id);
+    if (index === -1) throw new NotFoundException(`Filme com ID ${id} não encontrado`);
+    this.movies.splice(index, 1);
   }
 }
