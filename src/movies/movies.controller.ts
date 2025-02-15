@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { QueryFilterDto } from '../dto/query-filter.dto';
-import { CreateMovieDto } from 'src/dto/create-user.dto';
+import { CreateMovieDto } from '../dto/create-user.dto';
 
 @Controller('movies')
 export class MoviesController {
