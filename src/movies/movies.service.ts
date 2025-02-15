@@ -2,21 +2,31 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class MoviesService {
-  private movies = [
-    { id: 1, name: 'Kimi no na Wa' },
-    { id: 2, name: 'Avengers' }
-  ];
-  // Armazena a lista de filmes em memória
+    // Armazena a lista de filmes em um array
+  private movies = [];
 
   // Método para criar um novo filme
   create(movie) {
+    movie.id = this.movies.length + 1;
     this.movies.push(movie);
     return movie;
   }
 
   // Método para listar todos os filmes
-  findAll() {
-    return this.movies;
+  findAll(filter?: string, page?: number) {
+    //return this.movies;
+    let results = this.movies;
+
+    if (filter) {
+      results = results.filter((movie) =>
+        movie.name.toLowerCase().includes(filter.toLowerCase()),
+      );
+    }
+
+    const pageSize = 5;
+    const start = ((page || 1) - 1) * pageSize;
+
+    return results.slice(start, start + pageSize);
   }
 
   // Método para encontrar um item específico pelo ID
