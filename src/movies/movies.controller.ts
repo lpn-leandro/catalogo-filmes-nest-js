@@ -1,4 +1,19 @@
-import { Controller, Get, Post, Put, Patch, Delete, Param, Body, HttpCode, Query, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  HttpCode,
+  Query,
+  ParseIntPipe,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { QueryFilterDto } from '../dto/query-filter.dto';
 import { CreateMovieDto } from 'src/dto/create-user.dto';
@@ -7,10 +22,16 @@ import { CreateMovieDto } from 'src/dto/create-user.dto';
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
+  @Get('/admin')
+  throwHttpExceptionSimple() {
+    throw new HttpException('Acesso proibido', HttpStatus.FORBIDDEN);
+  }
+
   // Método POST para criar um novo item
   @Post()
   @HttpCode(201)
-  create(@Body() createMovieDto: CreateMovieDto) {// Parâmetro recebido diretamente sem DTO
+  create(@Body() createMovieDto: CreateMovieDto) {
+    // Parâmetro recebido diretamente sem DTO
     return this.moviesService.create(createMovieDto);
   }
 
@@ -23,6 +44,10 @@ export class MoviesController {
   // Método GET para buscar um item específico pelo ID
   @Get(':id')
   findOneMovie(@Param('id', ParseIntPipe) id: number) {
+    if (id === null) {
+      throw new NotFoundException('Recurso não encontrado');
+    }
+
     return this.moviesService.findOne(id);
   }
 
@@ -44,4 +69,5 @@ export class MoviesController {
   remove(@Param('id') id: string) {
     return this.moviesService.remove(+id);
   }
+
 }
