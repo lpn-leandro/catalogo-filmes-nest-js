@@ -1,5 +1,7 @@
-import { Controller, Get, Post, Put, Patch, Delete, Param, Body, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Param, Body, HttpCode, Query, ParseIntPipe } from '@nestjs/common';
 import { MoviesService } from './movies.service';
+import { QueryFilterDto } from '../dto/query-filter.dto';
+import { CreateMovieDto } from 'src/dto/create-user.dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -8,20 +10,20 @@ export class MoviesController {
   // Método POST para criar um novo item
   @Post()
   @HttpCode(201)
-  create(@Body() createMovie: any) {// Parâmetro recebido diretamente sem DTO
-    return this.moviesService.create(createMovie);
+  create(@Body() createMovieDto: CreateMovieDto) {// Parâmetro recebido diretamente sem DTO
+    return this.moviesService.create(createMovieDto);
   }
 
   // Método GET para listar todos os itens
   @Get()
-  findAll() {
-    return this.moviesService.findAll();
+  findAllMovies(@Query() QueryFilter: QueryFilterDto) {
+    return this.moviesService.findAll(QueryFilter.filter, QueryFilter.page);
   }
 
   // Método GET para buscar um item específico pelo ID
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.moviesService.findOne(+id);
+  findOneMovie(@Param('id', ParseIntPipe) id: number) {
+    return this.moviesService.findOne(id);
   }
 
   // Método PUT para substituir um item específico pelo ID
